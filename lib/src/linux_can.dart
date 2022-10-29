@@ -88,6 +88,21 @@ class CanDevice {
     calloc.free(canFrame);
     return read;
   }
+  
+  /// Writes to the CAN bus. No error checking currently
+  void write() {
+    if (_socket < 0) throw StateError("Call setup() before writing.");
+    final canFrame = calloc.allocate<can_frame>(sizeOf<can_frame>());
+    final canFramePtr = canFrame.ref;
+    final pointer = canFrame.cast<Void>();
+    final len = sizeOf<can_frame>();
+    canFramePtr.can_id = 0x7E0;
+    canFramePtr.can_dlc = 3;
+    canFramePtr.data[0] = 0x02; //This is just a basic UDS diagnostic test. Since we dont know if the MCP2515 driver excludes its own messages, we would at least see the response.
+    canFramePtr.data[1] = 0x10;
+    canFramePtr.data[2] = 0x01;
+    _libC.write(_socket, pointer, len) != sizeOf<can_frame>;
+  }
 
   void clearReceiveBuffer() {
     CanFrame? frame;
