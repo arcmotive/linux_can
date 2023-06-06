@@ -37,7 +37,8 @@ class CanDevice {
     isolate.kill();
 
     _socket = _libC.socket(PF_CAN, SOCK_RAW, CAN_RAW);
-    if (_socket < 0) throw SocketException("Failed to open CAN socket.");
+    if (_socket < 0)
+      throw SocketException("Failed to open CAN socket for $interfaceName.");
 
     // Set socket non-blocking
     final flags = _libC.fcntl(_socket, F_GETFL, 0);
