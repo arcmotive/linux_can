@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:posix/posix.dart';
 import 'dart:io';
 import 'dart:isolate';
 import 'package:ffi/ffi.dart';
@@ -9,12 +10,6 @@ import 'bindings/libc_arm32.g.dart';
 
 const _DYLIB = "libc.so.6";
 const _CAN_INTERFACE = "can0";
-const _CAN_INTERFACE_UTF8 = [
-  0x63, //c
-  0x61, //a
-  0x6E, //n
-  0x30, //0
-];
 
 void _setupBitrate(int bitrate) {
   final _libC = LibC(DynamicLibrary.open(_DYLIB));
@@ -26,12 +21,16 @@ void _setupBitrate(int bitrate) {
 class CanDevice {
   late final _libC = LibC(DynamicLibrary.open(_DYLIB));
   final int bitrate;
+  final String interfaceName;
 
-  CanDevice({this.bitrate = 500000});
+  CanDevice({
+    this.bitrate = 500000,
+    this.interfaceName = _CAN_INTERFACE,
+  });
 
   int _socket = -1;
 
-  /// Sets up the socket and binds it to `can0`. Throws an `SocketException``
+  /// Sets up the socket and binds it. Throws an `SocketException``
   /// when something wents wrong.
   Future setup() async {
     final isolate = await Isolate.spawn<int>(_setupBitrate, bitrate);
@@ -47,10 +46,14 @@ class CanDevice {
     // IFR
     final ifrPtr = calloc.allocate<ifreq>(sizeOf<ifreq>());
     final ifr = ifrPtr.ref;
-    ifr.ifr_name[0] = _CAN_INTERFACE_UTF8[0];
-    ifr.ifr_name[1] = _CAN_INTERFACE_UTF8[1];
-    ifr.ifr_name[2] = _CAN_INTERFACE_UTF8[2];
-    ifr.ifr_name[3] = _CAN_INTERFACE_UTF8[3];
+
+    final ifName = this.interfaceName.toNativeUtf8().cast<Int8>();
+
+    // The cast here only works because the ifr_name field is the first field
+    // in the struct. If the struct changes, this will break.
+    // See https://github.com/dart-lang/sdk/issues/41237
+    strcpy(ifrPtr as Pointer<Int8>, ifName);
+
     final outputioctl = _libC.ioctlPointer(_socket, SIOCGIFINDEX, ifrPtr);
     if (outputioctl < 0)
       throw SocketException("Failed to initalize CAN socket: $_socket");
@@ -88,7 +91,7 @@ class CanDevice {
     calloc.free(canFrame);
     return read;
   }
-  
+
   /// Writes to the CAN bus. No error checking currently
   void write() {
     if (_socket < 0) throw StateError("Call setup() before writing.");
@@ -98,7 +101,8 @@ class CanDevice {
     final len = sizeOf<can_frame>();
     canFramePtr.can_id = 0x7E0;
     canFramePtr.can_dlc = 3;
-    canFramePtr.data[0] = 0x02; //This is just a basic UDS diagnostic test. Since we dont know if the MCP2515 driver excludes its own messages, we would at least see the response.
+    canFramePtr.data[0] =
+        0x02; //This is just a basic UDS diagnostic test. Since we dont know if the MCP2515 driver excludes its own messages, we would at least see the response.
     canFramePtr.data[1] = 0x10;
     canFramePtr.data[2] = 0x01;
     _libC.write(_socket, pointer, len) != sizeOf<can_frame>();
