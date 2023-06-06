@@ -550,7 +550,7 @@ abstract class EPOLL_EVENTS {
 
 // class epoll_event extends ffi.Opaque {}
 
-class iovec extends ffi.Struct {
+final class iovec extends ffi.Struct {
   external ffi.Pointer<ffi.Void> iov_base;
 
   @ffi.Uint64()
@@ -569,7 +569,7 @@ abstract class socket_type {
   static const int SOCK_NONBLOCK = 2048;
 }
 
-class sockaddr_storage extends ffi.Struct {
+final class sockaddr_storage extends ffi.Struct {
   @ffi.Uint16()
   external int ss_family;
 
@@ -1440,7 +1440,7 @@ class ArrayHelper_sockaddr_storage___ss_padding_level0 {
   }
 }
 
-class msghdr extends ffi.Struct {
+final class msghdr extends ffi.Struct {
   external ffi.Pointer<ffi.Void> msg_name;
 
   @ffi.Uint32()
@@ -1460,9 +1460,9 @@ class msghdr extends ffi.Struct {
   external int msg_flags;
 }
 
-class cmsghdr extends ffi.Opaque {}
+final class cmsghdr extends ffi.Opaque {}
 
-class linger extends ffi.Struct {
+final class linger extends ffi.Struct {
   @ffi.Int32()
   external int l_onoff;
 
@@ -1470,18 +1470,18 @@ class linger extends ffi.Struct {
   external int l_linger;
 }
 
-class if_nameindex extends ffi.Struct {
+final class if_nameindex extends ffi.Struct {
   @ffi.Uint32()
   external int if_index;
 
   external ffi.Pointer<ffi.Uint8> if_name;
 }
 
-class iface extends ffi.Opaque {}
+final class iface extends ffi.Opaque {}
 
-class ifaddr extends ffi.Opaque {}
+final class ifaddr extends ffi.Opaque {}
 
-class ifmap extends ffi.Struct {
+final class ifmap extends ffi.Struct {
   @ffi.Uint64()
   external int mem_start;
 
@@ -1501,9 +1501,9 @@ class ifmap extends ffi.Struct {
   external int port;
 }
 
-// class ifreq extends ffi.Opaque {}
+// final class ifreq extends ffi.Opaque {}
 
-class ifconf extends ffi.Opaque {}
+final class ifconf extends ffi.Opaque {}
 
 /// struct can_frame - basic CAN frame structure
 /// @can_id:  CAN ID of the frame and CAN_*_FLAG flags, see canid_t definition
@@ -1514,7 +1514,7 @@ class ifconf extends ffi.Opaque {}
 /// @__res0:  reserved / padding
 /// @__res1:  reserved / padding
 /// @data:    CAN frame payload (up to 8 byte)
-class can_frame extends ffi.Struct {
+final class can_frame extends ffi.Struct {
   @ffi.Uint32()
   external int can_id;
 
@@ -1632,7 +1632,7 @@ class ArrayHelper_can_frame_data_level0 {
 /// @__res0: reserved / padding
 /// @__res1: reserved / padding
 /// @data:   CAN FD frame payload (up to CANFD_MAX_DLEN byte)
-class canfd_frame extends ffi.Struct {
+final class canfd_frame extends ffi.Struct {
   @ffi.Uint32()
   external int can_id;
 
@@ -2152,7 +2152,7 @@ class ArrayHelper_canfd_frame_data_level0 {
 ///
 /// The filter can be inverted (CAN_INV_FILTER bit set in can_id) or it can
 /// filter for error message frames (CAN_ERR_FLAG bit set in mask).
-class can_filter extends ffi.Struct {
+final class can_filter extends ffi.Struct {
   @ffi.Uint32()
   external int can_id;
 

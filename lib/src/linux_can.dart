@@ -27,7 +27,7 @@ class CanDevice {
   late final _libC = LibC(DynamicLibrary.open(_DYLIB));
   final int bitrate;
 
-  CanDevice({this.bitrate: 500000});
+  CanDevice({this.bitrate = 500000});
 
   int _socket = -1;
 
@@ -101,7 +101,7 @@ class CanDevice {
     canFramePtr.data[0] = 0x02; //This is just a basic UDS diagnostic test. Since we dont know if the MCP2515 driver excludes its own messages, we would at least see the response.
     canFramePtr.data[1] = 0x10;
     canFramePtr.data[2] = 0x01;
-    _libC.write(_socket, pointer, len) != sizeOf<can_frame>;
+    _libC.write(_socket, pointer, len) != sizeOf<can_frame>();
   }
 
   void clearReceiveBuffer() {
