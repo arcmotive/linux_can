@@ -13,7 +13,7 @@ There are no system dependenices needed, except the `libc.so.6` which probably s
 At first create a `CanDevice`. You can set a custom bitrate, default is 500 000. Afterwards call `setup()`. A `SocketException` will be thrown if something goes wrong.
 
 ```dart
-final canDevice = CanDevice(bitrate: 250000);
+final canDevice = CanDevice(bitrate: 250000, interfaceName: 'vcan0');
 await canDevice.setup();
 ```
 
@@ -29,8 +29,38 @@ print("Frame data: ${frame.data}");
 
 To close the socket use `close()`.
 
+# Testing
+
+To test the package you can use the `vcan` kernel module. It is a virtual CAN bus which can be used to test the package without any hardware.
+
+```bash
+sudo modprobe vcan
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+```
+
+Then you can run candump to see the data which is sent to the virtual CAN bus.
+
+In one terminal window:
+
+```bash
+candump vcan0
+```
+
+In another terminal window:
+
+```bash
+dart run ./bin/candump.dart
+```
+
+And in a third:
+
+```bash
+cansend vcan0 123#1122334455667788
+```
+
+You should see the dart candump script receive the data from `cansend` and print it to the console. Then the script will try and send an frame, but unfortunately it will fail for unknown reasons.
+
 ## Limitations
 
-- Because I have no hardware which allows writing CAN data, only reading is supported at the moment. If you are intrested in the package and have the hardware, feel free to contact me and we will get it on the way.
-- For now only `can0` is supported as an interface.
-- You can not change the bitrate once it is set. To change the bitrate a reboot of your device is currently needed.
+- Bitrate currently needs to be set externally from the dart script.
