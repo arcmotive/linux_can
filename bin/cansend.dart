@@ -13,23 +13,6 @@ void main() async {
 
   print('CanDevice setup successful.');
 
-  // canDevice.addListener((CanFrame frame) {
-  //   print('Received frame: $frame');
-  // });
-
-  // for (var i = 0; i < 10; i++) {
-  //   CanFrame canFrame = canDevice.read();
-  //   print('frame id: 0x${canFrame.id?.toRadixString(16)}'); // this works
-  //   for (int i = 0; i < canFrame.data.length; i++) {
-  //     print(
-  //         'real ${i}: ${canFrame.data[i]}\t${canFrame.data[i].toRadixString(16)}');
-  //   }
-  // }
-
-  // canFrame.data.forEach((element) {
-  //   print(element);
-  // });
-
   for (var i = 0; i < 10; i++) {
     print('$i');
     canDevice.write(CanFrame(

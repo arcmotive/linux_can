@@ -2,7 +2,13 @@
 
 Dart implementation of SocketCAN.
 
-Big shout out to [@ardera](https://github.com/ardera) who helped me a lot developing this package.
+This version supports both reading and writing can frames. Selecting your can interface is now possible.
+
+CAN-FD is not supported yet.
+
+Compared to the upstream repository, I've re-implement the FFI interfaces and re-written the code signficantly.
+
+Example `cansend` and `candump` programs are included in the `bin` directory.
 
 ## Using the package
 
@@ -17,7 +23,7 @@ final canDevice = CanDevice(bitrate: 250000, interfaceName: 'vcan0');
 await canDevice.setup();
 ```
 
-### Communication
+### Reading Data
 
 To receive data use `read()`, which returns a `CanFrame`. It contains the id and data of the frame.
 
@@ -28,6 +34,15 @@ print("Frame data: ${frame.data}");
 ```
 
 To close the socket use `close()`.
+
+### Writing Data
+
+```dart
+canDevice.write(CanFrame(
+      id: 0x7E0,
+      data: Uint8List.fromList([0x02, 0x10, i]),
+    ));
+```
 
 # Testing
 
@@ -44,22 +59,16 @@ Then you can run candump to see the data which is sent to the virtual CAN bus.
 In one terminal window:
 
 ```bash
-candump vcan0
+dart run ./bin/candump.dart
 ```
 
 In another terminal window:
 
 ```bash
-dart run ./bin/candump.dart
+dart run ./bin/cansend.dart
 ```
 
-And in a third:
-
-```bash
-cansend vcan0 123#1122334455667788
-```
-
-You should see the dart candump script receive the data from `cansend` and print it to the console. Then the script will try and send an frame, but unfortunately it will fail for unknown reasons.
+You should see the dart `candump` script receive the data from `cansend` and print it to the console.
 
 ## Limitations
 
