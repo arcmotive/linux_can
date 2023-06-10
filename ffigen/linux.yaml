@@ -1,0 +1,59 @@
+name: 'native'
+description: 'Linux bindings to all posix apis'
+
+output: '../lib/src/bindings/native.dart'
+
+headers:
+  entry-points:
+    - '/usr/include/net/if.h'
+    - '/usr/include/x86_64-linux-gnu/sys/unistd.h'
+    - '/usr/include/x86_64-linux-gnu/sys/ioctl.h'
+    - '/usr/include/x86_64-linux-gnu/sys/types.h'
+    - '/usr/include/x86_64-linux-gnu/sys/socket.h'
+    - '/usr/include/linux/can.h'
+    - '/usr/include/linux/can/raw.h'
+
+functions:
+  include:
+    - 'if_nametoindex'
+    - 'socket'
+    - 'bind'
+    - 'getsockname'
+    - 'bind'
+    - 'read'
+    - 'write'
+    - 'close'
+    - 'system'
+    - 'fcntl'
+    - 'send'
+  variadic-arguments:
+    ioctl:
+    - [int, 'unsigned long', void*]
+
+structs:
+  include:
+    - 'ifreq'
+    - 'sockaddr'
+    - 'sockaddr_can'
+    - 'can_frame'
+    - 'can_filter'
+
+macros:
+  include:
+    - 'SIOCGIFINDEX'
+    - 'AF_CAN'
+    - 'PF_CAN'
+    - 'SOCK_RAW'
+    - 'CAN_RAW'
+    - 'CAN_INV_FILTER'
+    - 'CAN_ERR_FLAG'
+
+comments:
+    style: any
+    length: full
+
+exclude-all-by-default: true
+use-supported-typedefs: true
+
+# to generate code run
+# dart run ffigen --config ffigen/linux.yaml

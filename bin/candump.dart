@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:linux_can/linux_can.dart';
 
 void main() async {
@@ -12,19 +13,11 @@ void main() async {
 
   print('CanDevice setup successful.');
 
-  // canDevice.addListener((CanFrame frame) {
-  //   print('Received frame: $frame');
-  // });
-
-  CanFrame canFrame = canDevice.read();
-  // canFrame.data.forEach((element) {
-  //   print(element);
-  // });
-
-  // canDevice.send(CanFrame(0x123, [1, 2, 3, 4, 5, 6, 7, 8]));
-  for (var i = 0; i < 10; i++) {
-    print('$i');
-    canDevice.write();
-    // await Future.delayed(Duration(milliseconds: 10));
+  while (true) {
+    CanFrame canFrame = canDevice.read();
+    print('frame id: 0x${canFrame.id?.toRadixString(16)}'); // this works
+    for (int i = 0; i < canFrame.data.length; i++) {
+      print('${i}: ${canFrame.data[i]}\t${canFrame.data[i].toRadixString(16)}');
+    }
   }
 }

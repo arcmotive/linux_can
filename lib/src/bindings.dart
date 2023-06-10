@@ -21,6 +21,12 @@ abstract class LibCBase {
   int close(int __fd);
   int system(ffi.Pointer<ffi.Utf8> command);
   int fcntl(int fd, int cmd, int arg);
+  int send(
+    int __fd,
+    ffi.Pointer<ffi.Void> __buf,
+    int __n,
+    int __flags,
+  );
 }
 
 /// Implementation of the Arm32 C Library.
@@ -126,6 +132,16 @@ class LibC implements LibCBase {
   @override
   int socket(int __domain, int __type, int __protocol) {
     return _native.socket(__domain, __type, __protocol);
+  }
+
+  @override
+  int send(
+    int __fd,
+    ffi.Pointer<ffi.Void> __buf,
+    int __n,
+    int __flags,
+  ) {
+    return _native.send(__fd, __buf, __n, __flags);
   }
 
   @override
